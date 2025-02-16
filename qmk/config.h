@@ -1,0 +1,1 @@
+#define PERMISSIVE_HOLD_PER_KEY
