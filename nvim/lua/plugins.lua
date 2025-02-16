@@ -1,8 +1,8 @@
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
         vim.fn.system(
-        {"git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable", 
-        lazypath})
+                {"git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable", 
+                        lazypath})
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -11,7 +11,7 @@ require("lazy").setup({
         { 'echasnovski/mini.move',  version = '*'},
         { 'echasnovski/mini.comment', version =  '*'},
         { 'echasnovski/mini.files', version = '*'},
-        { 'chentoast/marks.nvim', event = "VeryLazy", version = '*', opts = {}},
+       -- { 'chentoast/marks.nvim', event = "VeryLazy", version = '*', opts = {}},
         { 'jake-stewart/multicursor.nvim', branch = "1.0",
                 config = function()
                         local mc = require("multicursor-nvim")
@@ -126,16 +126,16 @@ require("lazy").setup({
                                 highlight = {
                                         enable = true,
                                         additional_vim_regex_highlighting = false,
-                                        },
+                                },
                                 incrementalincremental_selection = {
-                                          enable = true,
-                                          keymaps = {
-                                                  init_selection = "gnn", -- set to `false` to disable one of the mappings
-                                                  node_incremental = "grn",
-                                                  scope_incremental = "grc",
-                                                  node_decremental = "grm",
-                                          },
-                                  },
+                                        enable = true,
+                                        keymaps = {
+                                                init_selection = "gnn", -- set to `false` to disable one of the mappings
+                                                node_incremental = "grn",
+                                                scope_incremental = "grc",
+                                                node_decremental = "grm",
+                                        },
+                                },
                                 indent = { enable = true },
                         })
                 end
@@ -181,44 +181,79 @@ require("lazy").setup({
                         require("fzf-lua").setup({"max-perf",winopts={cwd="~"}})
                 end
         },
-       --  { 'abecodes/tabout.nvim', lazy = true,
-       --          dependencies = { "nvim-treesitter/nvim-treesitter" },
-       --          opt = true,  -- Set this to true if the plugin is optional
-       --          event = 'InsertCharPre', -- Set the event to 'InsertCharPre' for better compatibility
-       --          priority = 1000 },
-        { "chrisgrieser/nvim-spider", lazy = true,
-        keys = {
-                {
-                        "e",
-                        "<cmd>lua require('spider').motion('e')<CR>",
-                        mode = { "n", "o", "x" },
-                },
-                {
-                        "w",
-                        "<cmd>lua require('spider').motion('w')<CR>",
-                        mode = { "n", "o", "x" },
-                },
-                {
-                        "b",
-                        "<cmd>lua require('spider').motion('b')<CR>",
-                        mode = { "n", "o", "x" }
-                }
-        }},
-        {
-                'MeanderingProgrammer/render-markdown.nvim',
-                dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
-                event = "VeryLazy",
-                ---@module 'render-markdown'
-                ---@type render.md.UserConfig
-                opts = {},
-        },
+        --{ "chrisgrieser/nvim-spider", lazy = true,
+        --        keys = {
+        --                {
+        --                        "e",
+        --                        "<cmd>lua require('spider').motion('e')<CR>",
+        --                        mode = { "n", "o", "x" },
+        --                },
+        --                {
+        --                        "w",
+        --                        "<cmd>lua require('spider').motion('w')<CR>",
+        --                        mode = { "n", "o", "x" },
+        --                },
+        --                {
+        --                        "b",
+        --                        "<cmd>lua require('spider').motion('b')<CR>",
+        --                        mode = { "n", "o", "x" }
+        --                }
+        --        }},
+        --{
+        --        'MeanderingProgrammer/render-markdown.nvim',
+        --        dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+        --        event = "VeryLazy",
+        --        ---@module 'render-markdown'
+        --        ---@type render.md.UserConfig
+        --        opts = {},
+        --},
         {
                 "folke/which-key.nvim",
+                -- 'default' for mappings similar to built-in completion
+                -- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
+                -- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
+                -- See the full "keymap" documentation for information on defining your own keymap.
+                keymap = { preset = 'default' },
+                appearance = {
+                        -- Sets the fallback highlight groups to nvim-cmp's highlight groups
+                        -- Useful for when your theme doesn't support blink.cmp
+                        -- Will be removed in a future release
+                        use_nvim_cmp_as_default = true,
+                        -- Set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
+                        -- Adjusts spacing to ensure icons are aligned
+                        nerd_font_variant = 'mono'
+                },
+                -- Default list of enabled providers defined so that you can extend it
+                -- elsewhere in your config, without redefining it, due to `opts_extend`
+                sources = {
+                        default = { 'lsp', 'path', 'snippets', 'buffer' },
+                },
+        },
+        {
+                'saghen/blink.cmp',
+                -- optional: provides snippets for the snippet source
+                dependencies = 'rafamadriz/friendly-snippets',
+
+                -- use a release tag to download pre-built binaries
+                version = '*',
+                -- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
+                -- build = 'cargo build --release',
+                -- If you use nix, you can build from source using latest nightly rust with:
+                -- build = 'nix run .#build-plugin',
+
+                ---@module 'blink.cmp'
+                ---@type blink.cmp.Config
+                opts = {
                         -- 'default' for mappings similar to built-in completion
                         -- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
                         -- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
                         -- See the full "keymap" documentation for information on defining your own keymap.
-                        keymap = { preset = 'default' },
+                        keymap = { preset = 'super-tab',
+                                ['<End>'] = { 'cancel', 'fallback' },
+                                ['<C-j>'] = { 'select_next', 'fallback' },
+                                ['<C-k>'] = { 'select_next', 'fallback' },
+                        },
+
                         appearance = {
                                 -- Sets the fallback highlight groups to nvim-cmp's highlight groups
                                 -- Useful for when your theme doesn't support blink.cmp
@@ -228,53 +263,18 @@ require("lazy").setup({
                                 -- Adjusts spacing to ensure icons are aligned
                                 nerd_font_variant = 'mono'
                         },
+
                         -- Default list of enabled providers defined so that you can extend it
                         -- elsewhere in your config, without redefining it, due to `opts_extend`
                         sources = {
                                 default = { 'lsp', 'path', 'snippets', 'buffer' },
                         },
                 },
-             {
-  'saghen/blink.cmp',
-  -- optional: provides snippets for the snippet source
-  dependencies = 'rafamadriz/friendly-snippets',
-
-  -- use a release tag to download pre-built binaries
-  version = '*',
-  -- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
-  -- build = 'cargo build --release',
-  -- If you use nix, you can build from source using latest nightly rust with:
-  -- build = 'nix run .#build-plugin',
-
-  ---@module 'blink.cmp'
-  ---@type blink.cmp.Config
-  opts = {
-    -- 'default' for mappings similar to built-in completion
-    -- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
-    -- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
-    -- See the full "keymap" documentation for information on defining your own keymap.
-    keymap = { preset = 'super-tab',
-               ['<End>'] = { 'cancel', 'fallback' },
-               ['<C-j>'] = { 'select_next', 'fallback' },
-               ['<C-k>'] = { 'select_next', 'fallback' },
-             },
-
-    appearance = {
-      -- Sets the fallback highlight groups to nvim-cmp's highlight groups
-      -- Useful for when your theme doesn't support blink.cmp
-      -- Will be removed in a future release
-      use_nvim_cmp_as_default = true,
-      -- Set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
-      -- Adjusts spacing to ensure icons are aligned
-      nerd_font_variant = 'mono'
-    },
-
-    -- Default list of enabled providers defined so that you can extend it
-    -- elsewhere in your config, without redefining it, due to `opts_extend`
-    sources = {
-      default = { 'lsp', 'path', 'snippets', 'buffer' },
-    },
-  },
-  },
+        },
+        --{
+        --        'ycdzj/win-mover.nvim',
+        --        lazy = false,
+        --        opts = {}, -- configuration goes here
+        --},
         { "meznaric/key-analyzer.nvim", opts = {} },
 })
