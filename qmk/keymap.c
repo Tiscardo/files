@@ -26,15 +26,42 @@ enum layers{
 };
 
 enum{
-    TD_P1R1,
-    TD_TEST,
+    DM_P1R1,
 };
 
-// Tap Dance definitions
+
+// Dynamic Macro Tab Dance
+// 1 tab = Play Macro 1
+// 2 tabs = Record Macro1 / Stop Record Macro1
+
+/* 0   - no macro is being recorded right now
+ * 1,2 - either macro 1 or 2 is being recorded */
+static uint8_t macro_id = 0;
+
+void td_dyn_macro( tap_dance_state_t *state, void *user_data ) {
+    keyrecord_t kr;
+    if (state->count == 1)
+    {
+        kr.event.pressed = false;
+        process_dynamic_macro( QK_DYNAMIC_MACRO_PLAY_1, &kr );
+    }
+    else if (state->count == 2)
+    {
+        if (macro_id == 0){ // Start recording macro 1
+            kr.event.pressed = false;
+            macro_id = 1;
+            process_dynamic_macro( QK_DYNAMIC_MACRO_RECORD_START_1, &kr );
+        }
+        else{ // Stop recording macro 1
+            kr.event.pressed = true;
+            process_dynamic_macro( QK_DYNAMIC_MACRO_RECORD_STOP, &kr );
+            macro_id = 0;
+            }
+    }
+}
+
 tap_dance_action_t tap_dance_actions[] = {
-    // Tap once for Escape, twice for Caps Lock
-    [TD_P1R1] = ACTION_TAP_DANCE_DOUBLE(DM_PLY1,DM_REC1),
-    [TD_TEST] = ACTION_TAP_DANCE_DOUBLE(KC_A, KC_B),
+    [DM_P1R1]  = ACTION_TAP_DANCE_FN( td_dyn_macro )
 };
 
 
@@ -43,14 +70,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_ESC,             KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,     KC_F11,   KC_F12,             KC_DEL,   KC_HOME,  KC_END,   KC_MUTE,
         KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,    KC_EQL,   KC_BSPC,            KC_NUM,   KC_PSLS,  KC_PAST,  KC_PMNS,
         KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,    KC_RBRC,                      KC_P7,    KC_P8,    KC_P9,
-        MO(CCP),  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,    KC_NUHS,  KC_ENT,             KC_P4,    KC_P5,    KC_P6,    KC_PPLS,
-        MT(MOD_LSFT, KC_END),KC_NUBS, KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH, MT(MOD_RSFT, KC_HOME),  KC_UP,    KC_P1,    KC_P2,    KC_P3,
+LT(CCP, KC_END),  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,    KC_NUHS,  KC_ENT,             KC_P4,    KC_P5,    KC_P6,    KC_PPLS,
+        KC_LSFT,  KC_NUBS,  KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH, KC_RSFT,  KC_UP,    KC_P1,    KC_P2,    KC_P3,
         KC_LCTL,  KC_LWIN,  KC_LALT,                            LT(CCP,KC_SPC),                                 KC_RALT,  MO(WIN_FN), KC_RCTL,  KC_LEFT,  KC_DOWN,  KC_RGHT,  KC_P0,    KC_PDOT,  KC_PENT),
     [CCP] = LAYOUT_iso_99(
         _______,            KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,     KC_F11,   KC_F12,             _______, TO(BASE),  _______,  RM_TOGG,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,  _______,            _______,  _______,  _______,  QK_BOOT,
-        _______,DM_PLY1,C(KC_RGHT),TD_TEST, DM_REC1,  _______,  _______,  _______, TO(BASE),  _______,  _______,  _______,    _______,                      _______,  _______,  _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  KC_LEFT,  KC_DOWN,    KC_UP,  KC_RGHT,  _______,  _______,    _______,  _______,            _______,  _______,  _______,  _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  KC_HOME,  _______,    _______,  _______,            _______,  _______,  _______,  QK_BOOT,
+        _______,TD(DM_P1R1),C(KC_RGHT),_______, _______,  _______,  _______,  _______, TO(BASE),  _______,  _______,  _______,    _______,                      _______,  _______,  _______,
+        _______,  _______,  _______,  KC_BSPC,  _______,  _______,  KC_LEFT,  KC_DOWN,    KC_UP,  KC_RGHT,  _______,  _______,    _______,  _______,            _______,  _______,  _______,  _______,
         _______,  _______,  _______,  C(KC_X),  C(KC_C), C(KC_V),C(KC_LEFT),  NK_TOGG,  _______,  _______,  _______,  _______,              _______,  _______,  _______,  _______,  _______,
         _______,  _______,  _______,                                QK_LLCK,                                _______,  _______,    _______,  _______,  _______,  _______,  _______,  _______,  _______),
     [WIN_BASE] = LAYOUT_iso_99(
