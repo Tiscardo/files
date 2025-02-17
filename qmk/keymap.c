@@ -55,13 +55,13 @@ void td_dyn_macro( tap_dance_state_t *state, void *user_data ) {
         if (macro_id == 0){ // Start recording macro 1
             kr.event.pressed = false;
             macro_id = 1;
-            rgb_matrix_enable_noeeprom();
-            rgb_matrix_set_color_all(1,0,0); // Turn on red led indicator
+            //rgb_matrix_enable_noeeprom();
+            //rgb_matrix_set_color_all(1,0,0); // Turn on red led indicator
             process_dynamic_macro( QK_DYNAMIC_MACRO_RECORD_START_1, &kr );
         }
         else{ // Stop recording macro 1
             kr.event.pressed = true;
-            rgb_matrix_disable_noeeprom();
+            //rgb_matrix_disable_noeeprom();
             process_dynamic_macro( QK_DYNAMIC_MACRO_RECORD_STOP, &kr );
             macro_id = 0;
             }
@@ -76,14 +76,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case CK_SELA: // Select (&copy) all
       if (record->event.pressed) {
-                tap_code16(LCTL(KC_A));
-                tap_code16(LCTL(KC_C));
+                tap_code16(C(KC_A));
+                tap_code16(C(KC_C));
                 return false;
             }
             break;
         case CK_NTCD:
             if (record->event.pressed) {
-                tap_code16(ALGR(KC_MINS));
+                tap_code16(C(S(KC_7)));
                 SEND_STRING("&n"); // /n in DE Layout
                 return false;
             }
@@ -94,7 +94,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     tap_code16(S(KC_END));
                     tap_code16(C(KC_C));
                 }
-                else{
+                else{ // yank whole line
                     tap_code(KC_HOME);
                     tap_code16(S(KC_END));
                     tap_code16(C(KC_C));
@@ -112,11 +112,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,    KC_RBRC,                      KC_P7,    KC_P8,    KC_P9,
 LT(CCP,KC_END),   KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,    KC_NUHS,  KC_ENT,             KC_P4,    KC_P5,    KC_P6,    KC_PPLS,
 MT(MOD_LSFT,KC_END),KC_NUBS, KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH, MT(MOD_RSFT,KC_HOME),  KC_UP,    KC_P1,    KC_P2,    KC_P3,
-        KC_LCTL,  KC_LWIN,  KC_LALT,                            LT(CCP,KC_SPC),                          KC_RALT,  MO(WIN_FN), KC_RCTL,  KC_LEFT,  KC_DOWN,  KC_RGHT,  KC_P0,    KC_PDOT,  KC_PENT),
+        KC_LCTL,  KC_LWIN,  KC_LALT,                                    KC_SPC,                          KC_RALT,  MO(WIN_FN), KC_RCTL,  KC_LEFT,  KC_DOWN,  KC_RGHT,  KC_P0,    KC_PDOT,  KC_PENT),
     [CCP] = LAYOUT_iso_99(
         _______,            KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,     KC_F11,   KC_F12,             _______, TO(BASE),  _______,  RM_TOGG,
         _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  KC_HOME,  _______,    _______,  _______,            _______,  _______,  _______,  QK_BOOT,
-        _______,TD(DM_P1R1),C(KC_RGHT),_______, _______,  _______,    MS_UP,  MS_DOWN, TO(BASE),  _______,  _______,S(KC_LBRC),S(KC_RBRC),                      _______,  _______,  _______,
+        _______,TD(DM_P1R1),C(KC_RGHT),_______, _______,  _______,  MS_WHLU,  MS_WHLD, TO(BASE),  _______,  _______,RALT(KC_7),RALT(KC_7),                      _______,  _______,  _______,
         _______,  CK_SELA,  KC_LSFT,  KC_BSPC,  _______,  _______,  KC_LEFT,  KC_DOWN,    KC_UP,  KC_RGHT,  _______,  _______,    _______,  _______,            _______,  _______,  _______,  _______,
         _______,  _______,  CK_YANK,  C(KC_X),  C(KC_C), C(KC_V),C(KC_LEFT),  NK_TOGG,  _______,  QK_AREP,   QK_REP,  CK_NTCD,         _______,  _______,  _______,  _______,  _______,
         _______,  _______,  _______,                                QK_LLCK,                                _______,  _______,    _______,  _______,  _______,  _______,  _______,  _______,  _______),
@@ -139,7 +139,7 @@ MT(MOD_LSFT,KC_END),KC_NUBS, KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     K
 #if defined(ENCODER_MAP_ENABLE)
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [BASE] = {ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
-    [CCP]   = {ENCODER_CCW_CW(RM_VALD, RM_VALU) },
+    [CCP]   = {ENCODER_CCW_CW(KC_BRID, KC_BRIU) },
     [WIN_BASE] = {ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
     [WIN_FN]   = {ENCODER_CCW_CW(RM_VALD, RM_VALU) }
 };
